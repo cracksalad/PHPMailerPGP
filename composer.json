@@ -1,11 +1,13 @@
 {
     "name": "cracksalad/phpmailer-pgp",
+    "version": "1.0.0",
     "type": "library",
     "description": "PHPMailerPGP enables PHPMailer to send PGP encrypted and signed e-mails",
     "keywords": [
         "mailer",
         "pgp"
     ],
+    "license": "LGPL-2.1-only",
     "authors": [
         {
             "name": "Travis Richardson"
@@ -26,6 +28,5 @@
         "psr-4": {
             "PHPMailer\\PHPMailer\\": "src/"
         }
-    },
-    "license": "LGPL-2.1-only"
+    }
 }
