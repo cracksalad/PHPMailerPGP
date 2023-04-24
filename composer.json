@@ -2,6 +2,10 @@
     "name": "cracksalad/phpmailer-pgp",
     "type": "library",
     "description": "PHPMailerPGP enables PHPMailer to send PGP encrypted and signed e-mails",
+    "keywords": [
+        "mailer",
+        "pgp"
+    ],
     "authors": [
         {
             "name": "Travis Richardson"
