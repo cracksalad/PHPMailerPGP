@@ -1,12 +1,6 @@
-![PHPMailer](https://raw.github.com/PHPMailer/PHPMailer/master/examples/images/phpmailer.png)
-
 # PHPMailerPGP - A full-featured email creation and transfer class for PHP with support for PGP/GPG email signing and encryption.
 
-Build status: [![Build Status](https://travis-ci.org/PHPMailer/PHPMailer.svg)](https://travis-ci.org/PHPMailer/PHPMailer)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/PHPMailer/PHPMailer/badges/quality-score.png?s=3758e21d279becdf847a557a56a3ed16dfec9d5d)](https://scrutinizer-ci.com/g/PHPMailer/PHPMailer/)
-[![Code Coverage](https://scrutinizer-ci.com/g/PHPMailer/PHPMailer/badges/coverage.png?s=3fe6ca5fe8cd2cdf96285756e42932f7ca256962)](https://scrutinizer-ci.com/g/PHPMailer/PHPMailer/)
-
-[![Latest Stable Version](https://poser.pugx.org/phpmailer/phpmailer/v/stable.svg)](https://packagist.org/packages/phpmailer/phpmailer) [![Total Downloads](https://poser.pugx.org/phpmailer/phpmailer/downloads)](https://packagist.org/packages/phpmailer/phpmailer) [![Latest Unstable Version](https://poser.pugx.org/phpmailer/phpmailer/v/unstable.svg)](https://packagist.org/packages/phpmailer/phpmailer) [![License](https://poser.pugx.org/phpmailer/phpmailer/license.svg)](https://packagist.org/packages/phpmailer/phpmailer) [![API Docs](https://github.com/phpmailer/phpmailer/workflows/Docs/badge.svg)](http://phpmailer.github.io/PHPMailer/)
+This project is based on [ravisorg/PHPMailer](https://github.com/ravisorg/PHPMailer) and replaced PHPMailer inside the repository with PHPMailer as a dependency. It also adds Composer support and includes minor changes to the code itself.
 
 See the main [PHPMailer](https://www.github.com/PHPMailer/PHPMailer) page for all the features PHPMailer supports. This page will document only the PGP additions.
 
@@ -31,18 +25,21 @@ In an ideal world, users would provide you with their PGP keys and you could use
 This software is distributed under the [LGPL 2.1](http://www.gnu.org/licenses/lgpl-2.1.html) license. Please read LICENSE for information on the
 software availability and distribution.
 
+## Installation
+
+Add this package to your composer.json like this:
+
+```bash
+composer require cracksalad/phpmailer-pgp
+```
+
 ## A Simple Example
 
 Set up your PHPMailer like you would normally:
 
 ```php
 <?php
-require_once 'src/Exception.php';
-require_once 'src/OAuth.php';
-require_once 'src/PHPMailer.php';
-require_once 'src/POP3.php';
-require_once 'src/SMTP.php';
-require_once 'PHPMailerPGP.php';
+require_once 'vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailerPGP;
 
@@ -77,7 +74,6 @@ $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 ...but then before sending, specify a file with the keys you want to use (optional) and the encryption / signing options you want to use:
 
 ```php
-
 // Optionally specify a file that contains the keys you want to use
 $mail->importKeyFile('/path/to/my-gpg-keyring.asc');
 
@@ -90,7 +86,6 @@ $mail->pgpSign(true);
 // Turn on protected headers for your email
 $mail->protectHeaders(true);
 
-<<<<<<< HEAD
 // Send!
 if(!$mail->send()) {
     echo 'Message could not be sent.';

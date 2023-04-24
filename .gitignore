@@ -1,9 +1,6 @@
-docs/*
-!docs/README.md
-test/message.txt
-test/testbootstrap.php
-build/
+/.settings
+/.buildpath
+/.project
 vendor/
 *.pem
 composer.lock
-.php_cs.cache
