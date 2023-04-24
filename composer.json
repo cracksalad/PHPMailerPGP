@@ -23,10 +23,5 @@
             "PHPMailer\\PHPMailer\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "PHPMailer\\Test\\": "test/"
-        }
-    },
     "license": "LGPL-2.1-only"
 }
