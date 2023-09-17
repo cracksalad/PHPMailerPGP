@@ -702,12 +702,12 @@ class PHPMailerPGP extends PHPMailer
             $this->edebug('Using passphrase for signing key '.$keyFingerprint);
         }
         else {
-            $passphrase = null;
+            $passphrase = '';
             $this->edebug('No passphrase specified for signing key '.$keyFingerprint);
         }
 
         $this->gnupg->clearsignkeys();
-        $this->gnupg->addsignkey($keyFingerprint,$passphrase);
+        $this->gnupg->addsignkey($keyFingerprint, $passphrase);
         $this->gnupg->setsignmode(\gnupg::SIG_MODE_DETACH);
         $this->gnupg->setarmor(1);
 
