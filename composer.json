@@ -1,6 +1,6 @@
 {
     "name": "cracksalad/phpmailer-pgp",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "type": "library",
     "description": "PHPMailerPGP enables PHPMailer to send PGP encrypted and signed e-mails",
     "keywords": [

@@ -748,6 +748,7 @@ class PHPMailerPGP extends PHPMailer {
      * @return string[] The key fingerprints
      */
     public function getKeys($identifier, $purpose) {
+        $this->initGNUPG();
         $keys = $this->gnupg->keyinfo($identifier);
         $fingerprints = [];
         foreach ($keys as $key) {
