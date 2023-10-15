@@ -5,8 +5,9 @@ namespace PHPMailer\PHPMailer;
 /**
  * PHPMailerPGP - PHPMailer subclass adding PGP/MIME signing and encryption.
  * @package PHPMailer
- * @author Travis Richardson (@ravisorg)
- * @author Andreas Wahlen
+ * @author  Travis Richardson (@ravisorg)
+ * @author  Andreas Wahlen
+ * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 class PHPMailerPGP extends PHPMailer
 {
