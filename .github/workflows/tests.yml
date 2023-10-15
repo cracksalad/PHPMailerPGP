@@ -1,0 +1,33 @@
+name: "Tests"
+on: 
+  - push
+  - pull_request
+jobs:
+  coding-standard:
+    runs-on: ubuntu-22.04
+    name: Coding standards
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: cs2pr
+
+      # Install dependencies and handle caching in one go.
+      - name: Install Composer dependencies
+        uses: "ramsey/composer-install@v2"
+        with:
+          # Bust the cache at least once a month - output format: YYYY-MM.
+          custom-cache-suffix: $(date -u "+%Y-%m")
+
+      - name: Check coding standards
+        id: phpcs
+        run: ./vendor/bin/phpcs -s --report-full --report-checkstyle=./phpcs-report.xml
+
+      - name: Show PHPCS results in PR
+        if: ${{ always() && steps.phpcs.outcome == 'failure' }}
+        run: cs2pr ./phpcs-report.xml

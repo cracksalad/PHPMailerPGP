@@ -1,45 +1,39 @@
 {
-    "name": "phpmailer/phpmailer",
+    "name": "cracksalad/phpmailer-pgp",
+    "version": "1.2.0",
     "type": "library",
-    "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+    "description": "PHPMailerPGP enables PHPMailer to send OpenPGP/GPG encrypted and signed e-mails",
+    "keywords": [
+        "mailer",
+        "open-pgp",
+        "gpg"
+    ],
+    "license": "LGPL-2.1-only",
     "authors": [
         {
-            "name": "Marcus Bointon",
-            "email": "phpmailer@synchromedia.co.uk"
+            "name": "Travis Richardson"
         },
         {
-            "name": "Jim Jagielski",
-            "email": "jimjag@gmail.com"
-        },
-        {
-            "name": "Andy Prevost",
-            "email": "codeworxtech@users.sourceforge.net"
-        },
-        {
-            "name": "Brent R. Matzelle"
+            "name": "Andreas Wahlen",
+            "role": "Maintainer"
         }
     ],
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
     "require": {
         "php": ">=5.5.0",
-        "ext-ctype": "*",
-        "ext-filter": "*"
+        "phpmailer/phpmailer": ">=6.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.2",
-        "phpdocumentor/phpdocumentor": "2.*",
-        "phpunit/phpunit": "^4.8 || ^5.7",
-        "zendframework/zend-serializer": "2.7.*",
-        "doctrine/annotations": "1.2.*",
-        "zendframework/zend-eventmanager": "3.0.*",
-        "zendframework/zend-i18n": "2.7.3"
+        "squizlabs/php_codesniffer": "^3.7.2",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpcompatibility/php-compatibility": "^9.3.5"
     },
     "suggest": {
-        "psr/log": "For optional PSR-3 debug logging",
-        "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
-        "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
-        "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
-        "ext-mbstring": "Needed to send email in multibyte encoding charset",
-        "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
+        "ext-gnupg": "is technically required, but not compatible with Windows"
     },
     "autoload": {
         "psr-4": {
@@ -51,5 +45,7 @@
             "PHPMailer\\Test\\": "test/"
         }
     },
-    "license": "LGPL-2.1"
+    "scripts": {
+        "check": "./vendor/bin/phpcs"
+    }
 }

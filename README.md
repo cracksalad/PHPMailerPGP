@@ -1,6 +1,11 @@
-![PHPMailer](https://raw.github.com/PHPMailer/PHPMailer/master/examples/images/phpmailer.png)
-
 # PHPMailerPGP - A full-featured email creation and transfer class for PHP with support for PGP/GPG email signing and encryption.
+
+[![Latest Stable Version](http://poser.pugx.org/cracksalad/phpmailer-pgp/v)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
+[![Total Downloads](http://poser.pugx.org/cracksalad/phpmailer-pgp/downloads)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
+[![License](http://poser.pugx.org/cracksalad/phpmailer-pgp/license)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
+[![PHP Version Require](http://poser.pugx.org/cracksalad/phpmailer-pgp/require/php)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
+
+This project is based on [ravisorg/PHPMailer](https://github.com/ravisorg/PHPMailer) and replaced PHPMailer inside the repository with PHPMailer as a dependency. It also adds Composer support and includes minor changes to the code itself.
 
 See the main [PHPMailer](https://www.github.com/PHPMailer/PHPMailer) page for all the features PHPMailer supports. This page will document only the PGP additions.
 
@@ -18,12 +23,25 @@ See the main [PHPMailer](https://www.github.com/PHPMailer/PHPMailer) page for al
 
 ## Why you might need it
 
-In an ideal world, users would provide you with their PGP keys and you could use this to send secure emails to them. More realistically: because your server sends emails with lots of sensitive information in them, and you should be encrypting it.
+In an ideal world, users would provide you with their PGP keys and you could use this to send secure emails to them. More realistically: because your server sends emails with lots of sensitive information in them, and you should be encrypting them.
 
 ## License
 
-This software is distributed under the [LGPL 2.1](http://www.gnu.org/licenses/lgpl-2.1.html) license. Please read LICENSE for information on the
-software availability and distribution.
+This software is distributed under the [LGPL 2.1](http://www.gnu.org/licenses/lgpl-2.1.html) license. Please read LICENSE for information on the software availability and distribution.
+
+## Installation
+
+Add this package to your composer.json like this:
+
+```bash
+composer require cracksalad/phpmailer-pgp
+```
+
+### Dependencies
+
+* gnupg/gnupg2
+* [PHP's PECL extension for gnupg](https://pecl.php.net/package/gnupg)
+* PHP 5.5+
 
 ## A Simple Example
 
@@ -31,9 +49,11 @@ Set up your PHPMailer like you would normally:
 
 ```php
 <?php
-require 'PHPMailerAutoload.php';
+require_once 'vendor/autoload.php';
 
-$mail = new PHPMailer;
+use PHPMailer\PHPMailer\PHPMailerPGP;
+
+$mail = new PHPMailerPGP;
 
 //$mail->SMTPDebug = 3;                               // Enable verbose debug output
 
@@ -64,7 +84,6 @@ $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 ...but then before sending, specify a file with the keys you want to use (optional) and the encryption / signing options you want to use:
 
 ```php
-
 // Optionally specify a file that contains the keys you want to use
 $mail->importKeyFile('/path/to/my-gpg-keyring.asc');
 
@@ -76,7 +95,11 @@ $mail->pgpSign(true);
 
 // Turn on protected headers for your email
 $mail->protectHeaders(true);
+```
 
+...and then continue normal PHPMailer operation:
+
+```php
 // Send!
 if(!$mail->send()) {
     echo 'Message could not be sent.';
@@ -85,4 +108,3 @@ if(!$mail->send()) {
     echo 'Message has been sent';
 }
 ```
-
