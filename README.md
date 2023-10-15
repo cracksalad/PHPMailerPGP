@@ -1,12 +1,5 @@
 # PHPMailerPGP - A full-featured email creation and transfer class for PHP with support for PGP/GPG email signing and encryption.
 
-[![Latest Stable Version](http://poser.pugx.org/cracksalad/phpmailer-pgp/v)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
-[![Total Downloads](http://poser.pugx.org/cracksalad/phpmailer-pgp/downloads)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
-[![License](http://poser.pugx.org/cracksalad/phpmailer-pgp/license)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
-[![PHP Version Require](http://poser.pugx.org/cracksalad/phpmailer-pgp/require/php)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
-
-This project is based on [ravisorg/PHPMailer](https://github.com/ravisorg/PHPMailer) and replaced PHPMailer inside the repository with PHPMailer as a dependency. It also adds Composer support and includes minor changes to the code itself.
-
 See the main [PHPMailer](https://www.github.com/PHPMailer/PHPMailer) page for all the features PHPMailer supports. This page will document only the PGP additions.
 
 ## Class Features
@@ -30,15 +23,7 @@ In an ideal world, users would provide you with their PGP keys and you could use
 
 This software is distributed under the [LGPL 2.1](http://www.gnu.org/licenses/lgpl-2.1.html) license. Please read LICENSE for information on the software availability and distribution.
 
-## Installation
-
-Add this package to your composer.json like this:
-
-```bash
-composer require cracksalad/phpmailer-pgp
-```
-
-### Dependencies
+## Dependencies
 
 * gnupg/gnupg2
 * [PHP's PECL extension for gnupg](https://pecl.php.net/package/gnupg)
