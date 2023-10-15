@@ -19,6 +19,7 @@ See the main [PHPMailer](https://www.github.com/PHPMailer/PHPMailer) page for al
 - Builds PGP/MIME emails so that attachments are encrypted (and signed) as well as the email bodies
 - Supports optional [Memory Hole protected email headers](https://github.com/autocrypt/memoryhole) (for verified/encrypted subjects, and verified from, to, and cc recipients)
 - Uses standard PHPMailer functions so that, in theory, any email you can create with PHPMailer can be encrypted/signed with PHPMailerPGP
+- Adheres to PHPMailer's coding standards
 - (Mostly) built generically so that other encryption systems (S/MIME) could use the same syntax in their classes
 
 ## Why you might need it
@@ -84,16 +85,23 @@ $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 ...but then before sending, specify a file with the keys you want to use (optional) and the encryption / signing options you want to use:
 
 ```php
-// Optionally specify a file that contains the keys you want to use
+// Optionally specify a file that contains the keys you want to use.
+// Not necessary if the key was already imported into gnupg previously (or manually).
 $mail->importKeyFile('/path/to/my-gpg-keyring.asc');
 
-// Turn on encryption for your email
-$mail->encrypt(true);
+// Optionally check if there is an encryption key for the given recipient(s).
+// People not knowing about OpenPGP might be confused by OpenPGP signed mails, 
+// so putting `pgpSign()` in an if-statement might be a good idea.
+if(count($mail->getKeys('joe@example.net', 'encrypt')) === 1) {
 
-// Turn on signing for your email
-$mail->pgpSign(true);
+    // Turn on encryption for your email
+    $mail->encrypt(true);
+    
+    // Turn on signing for your email
+    $mail->pgpSign(true);
+}
 
-// Turn on protected headers for your email
+// Turn on protected headers for your email (not supported by all OpenPGP supporting clients)
 $mail->protectHeaders(true);
 ```
 
