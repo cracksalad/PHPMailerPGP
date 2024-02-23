@@ -54,32 +54,32 @@ require_once 'vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailerPGP;
 
-$mail = new PHPMailerPGP;
+$mailer = new PHPMailerPGP();
 
-//$mail->SMTPDebug = 3;                               // Enable verbose debug output
+//$mailer->SMTPDebug = 3;                               // Enable verbose debug output
 
-$mail->isSMTP();                                      // Set mailer to use SMTP
-$mail->Host = 'smtp1.example.com;smtp2.example.com';  // Specify main and backup SMTP servers
-$mail->SMTPAuth = true;                               // Enable SMTP authentication
-$mail->Username = 'user@example.com';                 // SMTP username
-$mail->Password = 'secret';                           // SMTP password
-$mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-$mail->Port = 587;                                    // TCP port to connect to
+$mailer->isSMTP();                                      // Set mailer to use SMTP
+$mailer->Host = 'smtp1.example.com;smtp2.example.com';  // Specify main and backup SMTP servers
+$mailer->SMTPAuth = true;                               // Enable SMTP authentication
+$mailer->Username = 'user@example.com';                 // SMTP username
+$mailer->Password = 'secret';                           // SMTP password
+$mailer->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+$mailer->Port = 587;                                    // TCP port to connect to
 
-$mail->setFrom('from@example.com', 'Mailer');
-$mail->addAddress('joe@example.net', 'Joe User');     // Add a recipient
-$mail->addAddress('ellen@example.com');               // Name is optional
-$mail->addReplyTo('info@example.com', 'Information');
-$mail->addCC('cc@example.com');
-$mail->addBCC('bcc@example.com');
+$mailer->setFrom('from@example.com', 'Mailer');
+$mailer->addAddress('joe@example.net', 'Joe User');     // Add a recipient
+$mailer->addAddress('ellen@example.com');               // Name is optional
+$mailer->addReplyTo('info@example.com', 'Information');
+$mailer->addCC('cc@example.com');
+$mailer->addBCC('bcc@example.com');
 
-$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
-$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
-$mail->isHTML(true);                                  // Set email format to HTML
+$mailer->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+$mailer->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+$mailer->isHTML(true);                                  // Set email format to HTML
 
-$mail->Subject = 'Here is the subject';
-$mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+$mailer->Subject = 'Here is the subject';
+$mailer->Body    = 'This is the HTML message body <b>in bold!</b>';
+$mailer->AltBody = 'This is the body in plain text for non-HTML mail clients';
 ```
 
 ...but then before sending, specify a file with the keys you want to use (optional) and the encryption / signing options you want to use:
@@ -87,32 +87,45 @@ $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 ```php
 // Optionally specify a file that contains the keys you want to use.
 // Not necessary if the key was already imported into gnupg previously (or manually).
-$mail->importKeyFile('/path/to/my-gpg-keyring.asc');
+$mailer->importKeyFile('/path/to/my-gpg-keyring.asc');
 
 // Optionally check if there is an encryption key for the given recipient(s).
 // People not knowing about OpenPGP might be confused by OpenPGP signed mails, 
 // so putting `pgpSign()` in an if-statement might be a good idea.
-if(count($mail->getKeys('joe@example.net', 'encrypt')) === 1) {
+if (count($mailer->getKeys('joe@example.net', 'encrypt')) === 1) {
 
     // Turn on encryption for your email
-    $mail->encrypt(true);
+    $mailer->encrypt(true);
     
     // Turn on signing for your email
-    $mail->pgpSign(true);
+    $mailer->pgpSign(true);
 }
 
 // Turn on protected headers for your email (not supported by all OpenPGP supporting clients)
-$mail->protectHeaders(true);
+$mailer->protectHeaders(true);
 ```
 
 ...and then continue normal PHPMailer operation:
 
 ```php
 // Send!
-if(!$mail->send()) {
+if (!$mailer->send()) {
     echo 'Message could not be sent.';
-    echo 'Mailer Error: ' . $mail->ErrorInfo;
+    echo 'Mailer Error: ' . $mailer->ErrorInfo;
 } else {
     echo 'Message has been sent';
 }
+```
+
+### Key Lookup and Import
+
+```php
+$mailer = new PHPMailerPGP();
+$errCode = 0;
+$key = $mailer->lookupKeyServer('test@example.com', 'keys.openpgp.org', $errCode);
+if ($errCode === PHPMailerPGP::LOOKUP_ERR_OK) {
+    $mailer->importKey($key);
+} // else: not found or error occurred
+
+// now you can send encrypted e-mails to test@example.com
 ```

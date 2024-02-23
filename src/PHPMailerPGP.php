@@ -11,6 +11,35 @@ namespace PHPMailer\PHPMailer;
  */
 class PHPMailerPGP extends PHPMailer
 {
+    /**
+     * No error, key found and returned.
+     */
+    const LOOKUP_ERR_OK = 1;
+
+    /**
+     * Key not found.
+     */
+    const LOOKUP_ERR_NOT_FOUND = 2;
+
+    /**
+     * Rate limit of key server reached.
+     */
+    const LOOKUP_ERR_RATE_LIMIT = 3;
+
+    /**
+     * Key server is undergoing maintenance.
+     */
+    const LOOKUP_ERR_MAINTENANCE = 4;
+
+    /**
+     * Unknown error during lookup.
+     */
+    const LOOKUP_ERR_UNKNOWN = 255;
+
+
+    /**
+     * @type \gnupg
+     */
     protected $gnupg = null;
 
     /**
@@ -45,12 +74,14 @@ class PHPMailerPGP extends PHPMailer
      * headers in order to take advantage of this, and if you don't, you'll see "Encrypted Message"
      * as the subject of encrypted emails instead of the real subject. This has no effect if both
      * signing and encryption are disabled.
+     * @type boolean
      * @see https://github.com/autocrypt/memoryhole
      */
     protected $protectedHeaders = false;
 
     /**
      * Stores the original (unencrypted) subject line.
+     * @type string
      */
     protected $unprotectedSubject = null;
 
@@ -107,16 +138,16 @@ class PHPMailerPGP extends PHPMailer
      * directory + /.gnupg, however when running on a web server (eg: Apache) the home directory
      * will likely not exist and/or not be writable. Set this by calling setGPGHome before calling
      * any other encryption/signing methods.
-     * @var string
+     * @type string
      * @see  PHPMailerPGP::setGPGHome()
      */
     protected $gnupgHome = null;
 
     /**
      * Constructor.
-     * @param boolean $exceptions Should we throw external exceptions?
+     * @param boolean|null $exceptions Should we throw external exceptions?
      */
-    public function __construct($exceptions = false)
+    public function __construct($exceptions = null)
     {
         // This is not a great way to do this (adding it to __construct) but there doesn't seem to
         // be a better way that can include the dynamic version number of PHPMailer...
@@ -219,12 +250,12 @@ class PHPMailerPGP extends PHPMailer
      * Specifies the key to use when signing the message. To specify an exact key, pass in a key
      * fingerprint as the identifier.
      * @param string $identifier Something to search for unique to the key you want to use. Often
-     * an email address, but could be a key fingerprint, key ID, name, etc.
+     *  an email address, but could be a key fingerprint, key ID, name, etc.
      * @param string $passphrase If the secret key is encrypted, this is the passphrase used to
-     * decrypt it.
+     *  decrypt it.
      *
-     * Unfortunately not supported in PHP's GnuPG module, so at the moment does nothing (kept
-     * because the command line gpg program can use it).
+     *  Unfortunately not supported in PHP's GnuPG module, so at the moment does nothing (kept
+     *  because the command line gpg program can use it).
      * @see  PHPMailerPGP::autoAddSignature()
      * @see  PHPMailerPGP::addKeyPassphrase()
      */
@@ -299,9 +330,9 @@ class PHPMailerPGP extends PHPMailer
      * if multiple valid keys are found, this will fail. Specifying a key fingerprint avoids these
      * issues.
      * @param string $identifier Something to search for unique to the key you want to use. Often
-     * an email address, but could be a key fingerprint, key ID, name, etc.
+     *  an email address, but could be a key fingerprint, key ID, name, etc.
      * @param string $keyFingerprint The exact key fingerprint to use with this recipient.
-     * @see  PHPMailerPGP::autoAddRecipients()
+     * @see PHPMailerPGP::autoAddRecipients()
      */
     public function addRecipient($identifier, $keyFingerprint = null)
     {
@@ -321,9 +352,9 @@ class PHPMailerPGP extends PHPMailer
      * Unfortunately not supported in PHP's GnuPG module, so at the moment does nothing (kept
      * because the command line gpg program can use it).
      * @param string $identifier Something to search for unique to the key you want to use. Often
-     * an email address, but could be a key fingerprint, key ID, name, etc.
+     *  an email address, but could be a key fingerprint, key ID, name, etc.
      * @param string $passphrase If the secret key is encrypted, this is the passphrase used to
-     * decrypt it.
+     *  decrypt it.
      */
     public function addKeyPassphrase($identifier, $passphrase)
     {
@@ -337,10 +368,10 @@ class PHPMailerPGP extends PHPMailer
      * Imports one or more keys into the local user's keychain. These can be secret or public keys,
      * generally anything exported by (eg) gpg --export. The results of the import are written to
      * PHPMailer's debug log.
-     * @param  string $data One or more GPG/PGP keys
+     * @param string $data One or more GPG/PGP keys
      * @throws PHPMailerPGPException
      * @return void
-     * @see  PHPMailerPGP::importKeyFile()
+     * @see PHPMailerPGP::importKeyFile()
      */
     public function importKey($data)
     {
@@ -365,10 +396,10 @@ class PHPMailerPGP extends PHPMailer
      * Imports one or more keys from a file into the local user's keychain. These can be secret or
      * public keys, generally anything exported by (eg) gpg --export. The results of the import are
      * written to PHPMailer's debug log.
-     * @param  string $data One or more GPG/PGP keys
+     * @param string $data One or more GPG/PGP keys
      * @throws PHPMailerPGPException
      * @return void
-     * @see  PHPMailerPGP::importKey()
+     * @see PHPMailerPGP::importKey()
      */
     public function importKeyFile($path)
     {
@@ -376,6 +407,57 @@ class PHPMailerPGP extends PHPMailer
             throw new PHPMailerPGPException('Specified key file path does not exist');
         }
         $this->importKey(file_get_contents($path));
+    }
+
+    /**
+     * HKP based lookup on a key server.
+     * @param string $query the e-mail address, hexadecimal key ID or a hexadecimal key fingerprint
+     * @param string $keyserver FQDN of a key server
+     * @param int $errCode will be set to one of the self::LOOKUP_ERR_* constants
+     * @return string|null the public key given by the key server or null if an error occurred
+     *  (e.g. if key was not found)
+     * @see PHPMailerPGP::importKey()
+     */
+    public static function lookupKeyServer($query, $keyserver = 'keys.openpgp.org', &$errCode = 0)
+    {
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                'ignore_errors' => true
+            ]
+        ]);
+        $stream = fopen(
+            'https://' . $keyserver . '/pks/lookup?op=get&options=mr&search=' . $query,
+            'r',
+            false,
+            $context
+        );
+        $meta = stream_get_meta_data($stream);
+        $res = stream_get_contents($stream);
+        fclose($stream);
+
+        if (isset($meta['wrapper_data'][0])) {
+            $parts = explode(' ', $meta['wrapper_data'][0], 3);
+            switch ($parts[1]) {
+                case 200:       // OK
+                    $errCode = self::LOOKUP_ERR_OK;
+                    return $res;
+                case 404:       // Not Found
+                    $errCode = self::LOOKUP_ERR_NOT_FOUND;
+                    break;
+                case 429:       // Too Many Requests
+                    $errCode = self::LOOKUP_ERR_RATE_LIMIT;
+                    break;
+                case 503:       // Service Unavailable
+                    $errCode = self::LOOKUP_ERR_MAINTENANCE;
+                    break;
+                default:
+                    $errCode = self::LOOKUP_ERR_UNKNOWN;
+            }
+        } else {
+            $errCode = self::LOOKUP_ERR_UNKNOWN;
+        }
+        return null;
     }
 
     /**
@@ -698,10 +780,10 @@ class PHPMailerPGP extends PHPMailer
 
     /**
      * Internal method used to sign a string with a secret key.
-     * @param  string $plaintext      The string to be signed.
+     * @param  string $plaintext The string to be signed.
      * @param  string $keyFingerprint The fingerprint of the secret key to be used to sign the
-     * string.
-     * @return string                 The resulting ASCII armored detached signature
+     *  string.
+     * @return string The resulting ASCII armored detached signature
      * @throws PHPMailerPGPException
      * @access private
      */
@@ -763,9 +845,9 @@ class PHPMailerPGP extends PHPMailer
      * Obviously you can not send to addresses without a key, but you can also not send to
      * addresses with several (known) keys.
      * @param $identifier string Any identifier that could be used to search for a key (usually an
-     * email address, but could be a key fingerprint, key ID, name, etc)
+     *  email address, but could be a key fingerprint, key ID, name, etc)
      * @param $purpose string The purpose the key will be used for (either 'sign' or 'encrypt').
-     * Used to ensure that the key being returned will be suitable for the intended purpose.
+     *  Used to ensure that the key being returned will be suitable for the intended purpose.
      * @return string[] The key fingerprints
      */
     public function getKeys($identifier, $purpose)
@@ -802,9 +884,9 @@ class PHPMailerPGP extends PHPMailer
     /**
      * Internal method used to find a valid key fingerprint based on an identifier of some sort.
      * @param $identifier string Any identifier that could be used to search for a key (usually an
-     * email address, but could be a key fingerprint, key ID, name, etc)
+     *  email address, but could be a key fingerprint, key ID, name, etc)
      * @param $purpose string The purpose the key will be used for (either 'sign' or 'encrypt').
-     * Used to ensure that the key being returned will be suitable for the intended purpose.
+     *  Used to ensure that the key being returned will be suitable for the intended purpose.
      * @return string The key fingerprint
      * @throws PHPMailerPGPException
      * @access private
