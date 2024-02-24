@@ -81,9 +81,9 @@ class PHPMailerPGP extends PHPMailer
 
     /**
      * Stores the original (unencrypted) subject line.
-     * @var string|null
+     * @var string
      */
-    protected $unprotectedSubject = null;
+    protected $unprotectedSubject = '';
 
     /**
      * If encrypting the email, should the list of recipients from the email be used to try and
@@ -955,6 +955,7 @@ class PHPMailerPGP extends PHPMailer
      * @param string $purpose The purpose the key will be used for (either 'sign' or 'encrypt').
      *  Used to ensure that the key being returned will be suitable for the intended purpose.
      * @return string[] The key fingerprints
+     * @psalm-return list<string>
      */
     public function getKeys($identifier, $purpose)
     {

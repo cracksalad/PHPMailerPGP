@@ -4,9 +4,6 @@
     <PossiblyFalseOperand>
       <code><![CDATA[getenv('HOME')]]></code>
     </PossiblyFalseOperand>
-    <PossiblyNullArgument>
-      <code><![CDATA[$this->unprotectedSubject]]></code>
-    </PossiblyNullArgument>
     <PossiblyNullReference>
       <code><![CDATA[addencryptkey]]></code>
       <code><![CDATA[addsignkey]]></code>
