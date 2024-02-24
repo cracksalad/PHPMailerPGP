@@ -429,7 +429,11 @@ class PHPMailerPGP extends PHPMailer
         if (!file_exists($path)) {
             throw new PHPMailerPGPException('Specified key file path does not exist');
         }
-        $this->importKey(file_get_contents($path));
+        $key = file_get_contents($path);
+        if ($key === false) {
+            throw new PHPMailerPGPException('Could not read key file');
+        }
+        $this->importKey($key);
     }
 
     /**
@@ -437,6 +441,7 @@ class PHPMailerPGP extends PHPMailer
      * @param string $query the e-mail address, hexadecimal key ID or a hexadecimal key fingerprint
      * @param string $keyserver FQDN of a key server
      * @param int $errCode will be set to one of the self::LOOKUP_ERR_* constants
+     * @throws PHPMailerPGPException if request to key server fails
      * @return string|null the public key given by the key server or null if an error occurred
      *  (e.g. if key was not found)
      * @see PHPMailerPGP::importKey()
@@ -455,6 +460,10 @@ class PHPMailerPGP extends PHPMailer
             false,
             $context
         );
+        if ($stream === false) {
+            throw new PHPMailerPGPException('Unable to send request to key server');
+        }
+
         /**
          * @psalm-var array{
          *    timed_out: bool,
@@ -474,14 +483,15 @@ class PHPMailerPGP extends PHPMailer
         $res = stream_get_contents($stream);
         fclose($stream);
 
-        // find last HTTP status line index (when redirects occur, there might be multiple HTTP status lines)
-        $httpStatusIndex = 0;
-        foreach ($meta['wrapper_data'] as $index => $item) {
-            if (strpos($item, 'HTTP/') === 0) {
-                $httpStatusIndex = $index;
+        if ($res !== false) {
+            // find last HTTP status line index (when redirects occur, there might be multiple HTTP status lines)
+            $httpStatusIndex = 0;
+            foreach ($meta['wrapper_data'] as $index => $item) {
+                if (strpos($item, 'HTTP/') === 0) {
+                    $httpStatusIndex = $index;
+                }
             }
-        }
-        if (isset($meta['wrapper_data'][$httpStatusIndex])) {
+
             $parts = explode(' ', $meta['wrapper_data'][$httpStatusIndex], 3);
             switch ($parts[1]) {
                 case 200:       // OK
@@ -730,6 +740,9 @@ class PHPMailerPGP extends PHPMailer
             // Remove trailing whitespace from all lines and convert line all endings to CRLF
             // (RFC3156 section 5.1)
             $lines = preg_split('/(\r\n|\r|\n)/', rtrim($signedBody));
+            if ($lines === false) {
+                throw new PHPMailerPGPException('Invalid signed body');
+            }
             for ($i = 0; $i < count($lines); $i++) {
                 $lines[$i] = rtrim($lines[$i]) . "\r\n";
             }
