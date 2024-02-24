@@ -4,6 +4,7 @@
 [![Total Downloads](http://poser.pugx.org/cracksalad/phpmailer-pgp/downloads)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
 [![License](http://poser.pugx.org/cracksalad/phpmailer-pgp/license)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
 [![PHP Version Require](http://poser.pugx.org/cracksalad/phpmailer-pgp/require/php)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
+[![Psalm Type Coverage](https://shepherd.dev/github/cracksalad/PHPMailerPGP/coverage.svg)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
 
 This project is based on [ravisorg/PHPMailer](https://github.com/ravisorg/PHPMailer) and replaced PHPMailer inside the repository with PHPMailer as a dependency. It also adds Composer support and includes minor changes to the code itself.
 

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<psalm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		    xmlns="https://getpsalm.org/schema/config"
+		    hideExternalErrors="true"
+		    autoloader="vendor/autoload.php"
+		    errorLevel="2"
+		    findUnusedBaselineEntry="true"
+		    findUnusedCode="false" 
+		    errorBaseline="psalm.baseline.xml">
+
+    <projectFiles>
+        <directory name="src" />
+    </projectFiles>
+    
+    <issueHandlers>
+        <RedundantCastGivenDocblockType errorLevel="suppress" />
+        <RiskyTruthyFalsyComparison errorLevel="suppress" />
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="gnupg" />
+            </errorLevel>
+        </UndefinedClass>
+        <UndefinedDocblockClass errorLevel="suppress" />
+    </issueHandlers>
+</psalm>
