@@ -573,7 +573,7 @@ class PHPMailerPGP extends PHPMailer
                 $result = parent::getMailMIME();
                 break;
         }
-        
+
         if ($this->Mailer != 'mail') {
             $result .= static::$LE;
         }
@@ -601,7 +601,7 @@ class PHPMailerPGP extends PHPMailer
         $success = parent::preSend();
 
         // Now revert the subject back to the way it was
-        if ($this->Subject = 'Encrypted Message') {
+        if ($this->Subject === 'Encrypted Message') {
             $this->Subject = $this->unprotectedSubject;
         }
 
