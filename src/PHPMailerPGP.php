@@ -146,6 +146,13 @@ class PHPMailerPGP extends PHPMailer
     protected $gnupgHome = '';
 
     /**
+     * The MIME boundary string for PGP related parts.
+     *
+     * @var string
+     */
+    protected $pgpBoundary = '';
+
+    /**
      * Constructor.
      * @param boolean|null $exceptions Should we throw external exceptions?
      */
@@ -555,10 +562,7 @@ class PHPMailerPGP extends PHPMailer
                 $result .= $this->headerLine('Content-Type', 'multipart/signed; micalg="pgp-' .
                     strtolower($this->micalg) . '";');
                 $result .= $this->textLine("\tprotocol=\"application/pgp-signature\";");
-                /**
-                 * @psalm-var string $this->boundary[1]
-                 */
-                $result .= $this->textLine("\tboundary=\"" . $this->boundary[1] . '"');
+                $result .= $this->textLine("\tboundary=\"" . $this->pgpBoundary . '"');
                 if ($this->Mailer != 'mail') {
                     $result .= static::$LE;
                 }
@@ -566,10 +570,7 @@ class PHPMailerPGP extends PHPMailer
             case 'encrypted':
                 $result .= $this->headerLine('Content-Type', 'multipart/encrypted;');
                 $result .= $this->textLine("\tprotocol=\"application/pgp-encrypted\";");
-                /**
-                 * @psalm-var string $this->boundary[1]
-                 */
-                $result .= $this->textLine("\tboundary=\"" . $this->boundary[1] . '"');
+                $result .= $this->textLine("\tboundary=\"" . $this->pgpBoundary . '"');
                 if ($this->Mailer != 'mail') {
                     $result .= static::$LE;
                 }
@@ -644,11 +645,11 @@ class PHPMailerPGP extends PHPMailer
         if ($this->protectedHeaders) {
             // Build a few containers here
             // - multipart/mixed with protected headers
-            //      - text/rfc822-headers with protected headers
-            //      - the normal body that would have been in an unprotected email
+            // - text/rfc822-headers with protected headers
+            // - the normal body that would have been in an unprotected email
             // Then we'll sign and/or encrypt that as a single part
 
-            $containerBoundary = 'q1_' . md5('pgpcontainer' . uniqid(strval(time())));
+            $containerBoundary = 'hdr_' . $this->generateId();
 
             // We want to include these headers a couple times, so let's generate them just once
             $containerHeaders = '';
@@ -737,7 +738,7 @@ class PHPMailerPGP extends PHPMailer
 
             $signedBody .= $body;
 
-            // Remove trailing whitespace from all lines and convert line all endings to CRLF
+            // Remove trailing whitespace from all lines and convert all line endings to CRLF
             // (RFC3156 section 5.1)
             $lines = preg_split('/(\r\n|\r|\n)/', rtrim($signedBody));
             if ($lines === false) {
@@ -769,23 +770,18 @@ class PHPMailerPGP extends PHPMailer
             // We calculated the content hash using SHA1, so note that.
             $this->micalg = 'SHA256';
 
-            // Generate new boundaries, and make sure they're not the same as the old ones (because
-            // it's possible that generating, signing, and encrypting the body takes less than a
-            // second, we prepend some text unique to this instance).
-            $boundary = md5('pgpsign' . uniqid(strval(time())));
-            $this->boundary[1] = 'b1_' . $boundary;
-            $this->boundary[2] = 'b2_' . $boundary;
-            $this->boundary[3] = 'b3_' . $boundary;
+            // Generate new boundaries, and make sure they're not the same as the old ones
+            $this->pgpBoundary = 'sign_' . $this->generateId();
 
             // The body of the email is pretty simple, so instead of modifying all the various
             // functions to support PGP/Mime, we'll just build it here
             $body = '';
             $body .= $this->textLine('This is an OpenPGP/MIME signed message (RFC 4880 and 3156)');
             $body .= static::$LE;
-            $body .= $this->textLine('--b1_' . $boundary);
+            $body .= $this->textLine('--' . $this->pgpBoundary);
             $body .= $signedBody; // will already have a CRLF at the end, don't add another one
             $body .= static::$LE;
-            $body .= $this->textLine('--b1_' . $boundary);
+            $body .= $this->textLine('--' . $this->pgpBoundary);
             $body .= $this->textLine('Content-Type: application/pgp-signature; name="signature.asc"');
             $body .= $this->textLine('Content-Description: OpenPGP digital signature');
             $body .= $this->textLine('Content-Disposition: attachment; filename="signature.asc"');
@@ -793,7 +789,7 @@ class PHPMailerPGP extends PHPMailer
             $body .= $signature;
             $body .= static::$LE;
             $body .= static::$LE;
-            $body .= $this->textLine('--b1_' . $boundary . '--');
+            $body .= $this->textLine('--' . $this->pgpBoundary . '--');
         }
 
         // If we're using PGP to encrypt the message, do that now.
@@ -844,26 +840,21 @@ class PHPMailerPGP extends PHPMailer
             $this->message_type = 'encrypted';
             $this->Encoding = '7bit';
 
-            // Generate new boundaries, and make sure they're not the same as the old ones (because
-            // it's possible that generating, signing, and encrypting the body takes less than a
-            // second, we prepend some text unique to this instance).
-            $boundary = md5('pgpencrypt' . uniqid(strval(time())));
-            $this->boundary[1] = 'b1_' . $boundary;
-            $this->boundary[2] = 'b2_' . $boundary;
-            $this->boundary[3] = 'b3_' . $boundary;
+            // Generate new boundaries, and make sure they're not the same as the old ones
+            $this->pgpBoundary = 'encr_' . $this->generateId();
 
             // The body of the email is pretty simple, so instead of modifying all the various
             // functions to support PGP/Mime, we'll just build it here
             $body = '';
             $body .= $this->textLine('This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)');
             $body .= static::$LE;
-            $body .= $this->textLine('--b1_' . $boundary);
+            $body .= $this->textLine('--' . $this->pgpBoundary);
             $body .= $this->textLine('Content-Type: application/pgp-encrypted');
             $body .= $this->textLine('Content-Description: PGP/MIME version identification');
             $body .= static::$LE;
             $body .= $this->textLine('Version: 1');
             $body .= static::$LE;
-            $body .= $this->textLine('--b1_' . $boundary);
+            $body .= $this->textLine('--' . $this->pgpBoundary);
             $body .= $this->textLine('Content-Type: application/octet-stream; name="encrypted.asc"');
             $body .= $this->textLine('Content-Description: OpenPGP encrypted message');
             $body .= $this->textLine('Content-Disposition: inline; filename="encrypted.asc"');
@@ -871,7 +862,7 @@ class PHPMailerPGP extends PHPMailer
             $body .= $encryptedBody;
             $body .= static::$LE;
             $body .= static::$LE;
-            $body .= $this->textLine('--b1_' . $boundary . '--');
+            $body .= $this->textLine('--' . $this->pgpBoundary . '--');
         }
 
         return $body;
