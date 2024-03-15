@@ -1,9 +1,8 @@
 <?php
 
-namespace PHPMailer\PHPMailer;
+namespace PHPMailer\PHPMailerPGP;
 
 /**
- * @package PHPMailer
  * @author  Andreas Wahlen
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */

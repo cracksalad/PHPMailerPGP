@@ -1,10 +1,11 @@
 <?php
 
-namespace PHPMailer\PHPMailer;
+namespace PHPMailer\PHPMailerPGP;
+
+use PHPMailer\PHPMailer\PHPMailer;
 
 /**
  * PHPMailerPGP - PHPMailer subclass adding PGP/MIME signing and encryption.
- * @package PHPMailer
  * @author  Travis Richardson (@ravisorg)
  * @author  Andreas Wahlen
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
@@ -171,7 +172,6 @@ class PHPMailerPGP extends PHPMailer
      * that uses the GnuPG methods before they attempt anything.
      * @throws PHPMailerPGPException
      * @return void
-     * @access private
      */
     protected function initGNUPG()
     {
@@ -614,7 +614,6 @@ class PHPMailerPGP extends PHPMailer
      * Extended from PHPMailer to optionally sign and encrypt the message before it's sent.
      *
      * Returns an empty string on failure.
-     * @access public
      * @throws PHPMailerPGPException
      * @return string The assembled message body
      */
@@ -873,7 +872,6 @@ class PHPMailerPGP extends PHPMailer
      *  string.
      * @return string The resulting ASCII armored detached signature
      * @throws PHPMailerPGPException
-     * @access private
      */
     protected function pgp_sign_string($plaintext, $keyFingerprint)
     {
@@ -910,7 +908,6 @@ class PHPMailerPGP extends PHPMailer
      * @psalm-param array<array-key, string> $keyFingerprints
      * @return string An ASCII armored encrypted string.
      * @throws PHPMailerPGPException
-     * @access private
      */
     protected function pgp_encrypt_string($plaintext, $keyFingerprints)
     {
@@ -1016,7 +1013,6 @@ class PHPMailerPGP extends PHPMailer
      *  Used to ensure that the key being returned will be suitable for the intended purpose.
      * @return string The key fingerprint
      * @throws PHPMailerPGPException
-     * @access private
      */
     protected function getKey($identifier, $purpose)
     {
