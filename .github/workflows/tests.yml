@@ -43,3 +43,28 @@ jobs:
         uses: docker://vimeo/psalm-github-actions
         with:
           args: --shepherd
+          
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      # Install dependencies and handle caching in one go.
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          # Bust the cache at least once a month - output format: YYYY-MM.
+          custom-cache-suffix: $(date -u "+%Y-%m")
+
+      - name: Import GPG key
+        run: gpg --import tests/private.key
+
+      - name: Unit tests
+        uses: php-actions/phpunit@v3
+        with:
+          version: '10.5'
+          php_version: '8.1'
+          php_extensions: gnupg

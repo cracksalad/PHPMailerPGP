@@ -1,29 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.22.2@d768d914152dbbf3486c36398802f74e80cfde48">
-  <file src="src/PHPMailerPGP.php">
+<files psalm-version="5.23.1@8471a896ccea3526b26d082f4461eeea467f10a4">
+  <file src="src/PGPHelper.php">
     <PossiblyFalseOperand>
       <code><![CDATA[getenv('HOME')]]></code>
     </PossiblyFalseOperand>
+  </file>
+  <file src="src/PGPKeyManager.php">
+    <PossiblyNullReference>
+      <code><![CDATA[deletekey]]></code>
+      <code><![CDATA[import]]></code>
+      <code><![CDATA[keyinfo]]></code>
+    </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$parts[1]]]></code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
+  <file src="src/PHPMailerPGP.php">
     <PossiblyNullReference>
       <code><![CDATA[addencryptkey]]></code>
       <code><![CDATA[addsignkey]]></code>
       <code><![CDATA[clearencryptkeys]]></code>
       <code><![CDATA[clearsignkeys]]></code>
-      <code><![CDATA[deletekey]]></code>
       <code><![CDATA[encrypt]]></code>
-      <code><![CDATA[import]]></code>
-      <code><![CDATA[keyinfo]]></code>
       <code><![CDATA[setarmor]]></code>
       <code><![CDATA[setarmor]]></code>
       <code><![CDATA[setsignmode]]></code>
       <code><![CDATA[sign]]></code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset>
-      <code><![CDATA[$parts[1]]]></code>
-    </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor>
       <code><![CDATA[PHPMailerPGP]]></code>
       <code><![CDATA[PHPMailerPGP]]></code>
     </PropertyNotSetInConstructor>
+    <UndefinedClass>
+      <code><![CDATA[\Psr\Log\LoggerInterface]]></code>
+    </UndefinedClass>
   </file>
 </files>
