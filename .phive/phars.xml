@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phive xmlns="https://phar.io/phive">
+  <phar name="phpunit" version="^10.0" installed="10.5.13" location="./tools/phpunit" copy="true"/>
+  <phar name="psalm" version="^5.0" installed="5.23.1" location="./tools/psalm" copy="true"/>
+</phive>

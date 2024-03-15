@@ -53,7 +53,7 @@ Set up your PHPMailer like you would normally:
 <?php
 require_once 'vendor/autoload.php';
 
-use PHPMailer\PHPMailer\PHPMailerPGP;
+use PHPMailer\PHPMailerPGP\PHPMailerPGP;
 
 $mailer = new PHPMailerPGP();
 
@@ -86,14 +86,18 @@ $mailer->AltBody = 'This is the body in plain text for non-HTML mail clients';
 ...but then before sending, specify a file with the keys you want to use (optional) and the encryption / signing options you want to use:
 
 ```php
+use PHPMailer\PHPMailerPGP\PGPKeyManager;
+
+$manager = new PGPKeyManager();
+
 // Optionally specify a file that contains the keys you want to use.
 // Not necessary if the key was already imported into gnupg previously (or manually).
-$mailer->importKeyFile('/path/to/my-gpg-keyring.asc');
+$manager->importKeyFile('/path/to/my-gpg-keyring.asc');
 
 // Optionally check if there is an encryption key for the given recipient(s).
 // People not knowing about OpenPGP might be confused by OpenPGP signed mails, 
 // so putting `pgpSign()` in an if-statement might be a good idea.
-if (count($mailer->getKeys('joe@example.net', 'encrypt')) === 1) {
+if (count($manager->getKeys('joe@example.net', 'encrypt')) === 1) {
 
     // Turn on encryption for your email
     $mailer->encrypt(true);
@@ -121,11 +125,11 @@ if (!$mailer->send()) {
 ### Key Lookup and Import
 
 ```php
-$mailer = new PHPMailerPGP();
+$manager = new PGPKeyManager();
 $errCode = 0;
-$key = $mailer->lookupKeyServer('test@example.com', 'keys.openpgp.org', $errCode);
-if ($errCode === PHPMailerPGP::LOOKUP_ERR_OK) {
-    $mailer->importKey($key);
+$key = $manager->lookupKeyServer('test@example.com', 'keys.openpgp.org', $errCode);
+if ($errCode === PGPKeyManager::LOOKUP_ERR_OK) {
+    $manager->importKey($key);
 } // else: not found or error occurred
 
 // now you can send encrypted e-mails to test@example.com

@@ -25,16 +25,16 @@
     },
     "require": {
         "php": ">=5.5.0",
-        "phpmailer/phpmailer": ">=6.0"
+        "phpmailer/phpmailer": "^6.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7.2",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
-        "phpcompatibility/php-compatibility": "^9.3.5",
-        "vimeo/psalm": "^5.22"
+        "phpcompatibility/php-compatibility": "^9.3.5"
     },
     "suggest": {
-        "ext-gnupg": "is technically required, but not compatible with Windows"
+        "ext-gnupg": "is technically required, but not compatible with Windows",
+        "psr/log": "For optional PSR-3 debug logging"
     },
     "autoload": {
         "psr-4": {
@@ -43,15 +43,28 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "PHPMailer\\Test\\": "test/"
+            "PHPMailerPGP\\Test\\": "tests/"
         }
     },
     "scripts": {
         "check": "./vendor/bin/phpcs",
-        "analyze": "./vendor/bin/psalm --no-diff --show-info=true",
+        "analyze": "./tools/psalm --no-diff --show-info=true",
+        "unit-test": "./tools/phpunit",
         "test": [
+            "@check",
+            "@analyze",
+            "@unit-test"
+        ],
+        "test-win": [
             "@check",
             "@analyze"
         ]
+    },
+    "scripts-descriptions": {
+        "check": "Runs PHP Code Sniffer",
+        "analyze": "Runs Psalm",
+        "unit-test": "Runs PHPUnit",
+        "test": "Runs PHP Code Sniffer, Psalm and PHPUnit",
+        "test-win": "Runs PHP Code Sniffer and Psalm (PHPUnit needs GnuPG extension, which is not compatible with Windows)"
     }
 }

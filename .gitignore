@@ -2,7 +2,9 @@
 /.settings
 /.buildpath
 /.phpcs-cache
+/.phpunit.cache
 /.project
 /build
 /composer.lock
+/tools
 /vendor
