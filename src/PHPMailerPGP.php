@@ -563,21 +563,19 @@ class PHPMailerPGP extends PHPMailer
                     strtolower($this->micalg) . '";');
                 $result .= $this->textLine("\tprotocol=\"application/pgp-signature\";");
                 $result .= $this->textLine("\tboundary=\"" . $this->pgpBoundary . '"');
-                if ($this->Mailer != 'mail') {
-                    $result .= static::$LE;
-                }
                 break;
             case 'encrypted':
                 $result .= $this->headerLine('Content-Type', 'multipart/encrypted;');
                 $result .= $this->textLine("\tprotocol=\"application/pgp-encrypted\";");
                 $result .= $this->textLine("\tboundary=\"" . $this->pgpBoundary . '"');
-                if ($this->Mailer != 'mail') {
-                    $result .= static::$LE;
-                }
                 break;
             default:
                 $result = parent::getMailMIME();
                 break;
+        }
+        
+        if ($this->Mailer != 'mail') {
+            $result .= static::$LE;
         }
 
         return $result;
