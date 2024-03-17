@@ -43,10 +43,11 @@ trait PGPHelper
             $this->gnupgHome = getenv('HOME') . '/.gnupg';
         }
         if ($this->gnupgHome === '') {
-            throw new PHPMailerPGPException('Unable to detect GnuPG home path, please call PHPMailerPGP::setGPGHome()');
+            throw new PHPMailerPGPException('Unable to detect GnuPG home path, please call ' .
+                    __CLASS__ . '::setGPGHome()');
         }
         if (!file_exists($this->gnupgHome)) {
-            throw new PHPMailerPGPException('GnuPG home path does not exist');
+            throw new PHPMailerPGPException('GnuPG home path "' . $this->gnupgHome . '" does not exist');
         }
         putenv('GNUPGHOME=' . escapeshellcmd($this->gnupgHome));
 

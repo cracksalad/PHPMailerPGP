@@ -57,8 +57,8 @@ class PGPKeyManager
      * @param string $data One or more GPG/PGP keys
      * @throws PHPMailerPGPException
      * @return void
-     * @see PHPMailerPGP::importKeyFile()
-     * @see PHPMailerPGP::deleteKey()
+     * @see PGPKeyManager::importKeyFile()
+     * @see PGPKeyManager::deleteKey()
      */
     public function importKey($data)
     {
@@ -104,8 +104,8 @@ class PGPKeyManager
      * @param string $path Path to GPG/PGP keys
      * @throws PHPMailerPGPException
      * @return void
-     * @see PHPMailerPGP::importKey()
-     * @see PHPMailerPGP::deleteKey()
+     * @see PGPKeyManager::importKey()
+     * @see PGPKeyManager::deleteKey()
      */
     public function importKeyFile($path)
     {
@@ -127,7 +127,7 @@ class PGPKeyManager
      * @throws PHPMailerPGPException if request to key server fails
      * @return string|null the public key given by the key server or null if an error occurred
      *  (e.g. if key was not found)
-     * @see PHPMailerPGP::importKey()
+     * @see PGPKeyManager::importKey()
      */
     public function lookupKeyServer($query, $keyserver = 'keys.openpgp.org', &$errCode = 0)
     {
@@ -203,7 +203,7 @@ class PGPKeyManager
      * @param string $key the e-mail address, hexadecimal key ID or a hexadecimal key fingerprint
      * @param bool $deletePrivateKey wether to delete corresponding private keys as well
      * @return void
-     * @see PHPMailerPGP::importKey()
+     * @see PGPKeyManager::importKey()
      */
     public function deleteKey($key, $deletePrivateKey)
     {
