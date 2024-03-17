@@ -672,6 +672,7 @@ class PHPMailerPGP extends PHPMailer
         $manager = new PGPKeyManager(
             $this->Debugoutput instanceof \Psr\Log\LoggerInterface ? $this->Debugoutput : null
         );
+        $manager->setGPGHome($this->gnupgHome);
         $fingerprints = $manager->getKeys($identifier, $purpose);
         if (count($fingerprints) === 1) {
             return $fingerprints[0];
