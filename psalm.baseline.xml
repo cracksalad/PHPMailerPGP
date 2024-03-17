@@ -31,8 +31,5 @@
       <code><![CDATA[PHPMailerPGP]]></code>
       <code><![CDATA[PHPMailerPGP]]></code>
     </PropertyNotSetInConstructor>
-    <UndefinedClass>
-      <code><![CDATA[\Psr\Log\LoggerInterface]]></code>
-    </UndefinedClass>
   </file>
 </files>
