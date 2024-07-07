@@ -1,5 +1,12 @@
 # PHPMailerPGP - A full-featured email creation and transfer class for PHP with support for PGP/GPG email signing and encryption.
 
+
+**THIS PROJECT HAS BEEN MOVED TO [https://github.com/cracksalad/PHPMailer-PGP](https://github.com/cracksalad/PHPMailer-PGP)!**
+
+This repository is a fork of a fork of PHPMailer, which does not make sense any more. Additionally forks and especially forks of forks are unvisible in the GitHub search. 
+That is why I have decided to move it. The packagist/composer package has not been moved and is the same as before, no changes necessary.
+
+
 [![Latest Stable Version](http://poser.pugx.org/cracksalad/phpmailer-pgp/v)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
 [![Total Downloads](http://poser.pugx.org/cracksalad/phpmailer-pgp/downloads)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
 [![License](http://poser.pugx.org/cracksalad/phpmailer-pgp/license)](https://packagist.org/packages/cracksalad/phpmailer-pgp)
